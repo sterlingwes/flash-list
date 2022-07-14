@@ -1,5 +1,12 @@
-import React from "react";
-import { StyleSheet, View, Image, Text, ViewStyle } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  ViewStyle,
+  Pressable,
+} from "react-native";
 import FastImage from "react-native-fast-image";
 
 import Author from "./models/Author";
@@ -12,7 +19,8 @@ export interface TweetContentProps {
 const tweetActions = (
   retweets: React.ReactNode,
   comments: React.ReactNode,
-  likes: React.ReactNode
+  likes: React.ReactNode,
+  { liked, setLiked }: { liked: boolean; setLiked: (liked: boolean) => void }
 ) => {
   return (
     <View style={[styles.rowActions, styles.actionBar]}>
@@ -30,13 +38,20 @@ const tweetActions = (
         />
         <Text style={styles.actionText}>{retweets}</Text>
       </View>
-      <View style={styles.elemAction}>
+      <Pressable style={styles.elemAction} onPress={() => setLiked(true)}>
         <Image
           style={styles.actionButton}
           source={require("assets/like.png")}
         />
-        <Text style={styles.actionText}>{likes}</Text>
-      </View>
+        <Text
+          style={[
+            styles.actionText,
+            liked && { fontWeight: "bold", fontSize: 18 },
+          ]}
+        >
+          {likes}
+        </Text>
+      </Pressable>
       <Image style={styles.actionButton} source={require("assets/share.png")} />
     </View>
   );
@@ -61,6 +76,7 @@ const GrayText = ({ children, numberOfLines, style }: GrayTextProps) => {
 };
 
 const TweetContent = ({ tweet }: TweetContentProps) => {
+  const [liked, setLiked] = useState(false);
   return (
     <View style={styles.singleItem}>
       <View style={styles.row}>
@@ -81,7 +97,8 @@ const TweetContent = ({ tweet }: TweetContentProps) => {
             {tweetActions(
               tweet.retweetCount,
               tweet.replyCount,
-              tweet.favoriteCount
+              tweet.favoriteCount,
+              { liked, setLiked }
             )}
           </View>
         </View>
